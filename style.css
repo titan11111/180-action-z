@@ -1,0 +1,242 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: none;
+}
+
+/* ボタンが「選択された」見た目にならないようにする */
+button {
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
+}
+button:focus, button:focus-visible {
+  outline: none;
+}
+button::selection { background: transparent; }
+
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000;
+  font-family: "Hiragino Sans", "Helvetica Neue", sans-serif;
+}
+
+#screen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #5c94fc;
+}
+
+/* ===== HUD ===== */
+#hud {
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  right: 0;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+  text-shadow: 2px 2px 0 #000;
+  pointer-events: none;
+  z-index: 5;
+}
+#hud .hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+#hearts {
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: #ff5d7a;
+}
+#hearts .empty { color: rgba(255,255,255,0.35); }
+#zoneLabel {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+#muteBtn {
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  font-size: 20px;
+  padding: 0;
+  transition: transform 0.08s ease;
+}
+#muteBtn:active { transform: scale(0.9); }
+
+/* ===== タイトル / ゴール オーバーレイ ===== */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  text-align: center;
+  padding: 20px;
+}
+#overlay.hidden { display: none; }
+#overlay h1 {
+  font-size: 32px;
+  margin: 0 0 8px;
+  text-shadow: 3px 3px 0 #d43;
+  letter-spacing: 2px;
+}
+#overlay p { margin: 4px 0; font-size: 15px; opacity: 0.9; }
+#overlay button {
+  margin-top: 22px;
+  padding: 14px 34px;
+  font-size: 18px;
+  font-weight: bold;
+  border: 3px solid #fff;
+  border-radius: 8px;
+  background: #e94560;
+  color: #fff;
+  touch-action: manipulation;
+  transition: transform 0.08s ease;
+}
+#overlay button:active { background: #c23350; transform: scale(0.94); }
+
+/* ===== ファミコン風コントローラー（下段30%） ===== */
+#controller {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 30vh;
+  min-height: 150px;
+  background: linear-gradient(#3a3f52, #23262f);
+  border-top: 3px solid #111;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 22px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  padding-left: calc(22px + env(safe-area-inset-left));
+  padding-right: calc(22px + env(safe-area-inset-right));
+  z-index: 10;
+}
+
+/* 十字キー（左） */
+.dpad {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  flex-shrink: 0;
+}
+.dpad button {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  background: #d8d8dc;
+  border: 2px solid #16161a;
+  color: #16161a;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 0;
+  transition: transform 0.06s ease;
+}
+.dpad button:active { background: #9a9aa0; transform: scale(0.94); }
+#cv-up    { top: 0;   left: 57px; border-radius: 6px 6px 0 0; }
+#cv-down  { bottom: 0; left: 57px; border-radius: 0 0 6px 6px; }
+#cv-left  { top: 57px; left: 0;   border-radius: 6px 0 0 6px; }
+#cv-right { top: 57px; right: 0;  border-radius: 0 6px 6px 0; }
+
+/* A/Bボタン（右）: 右から A → B の並び */
+.action-btns {
+  display: flex;
+  flex-direction: row-reverse; /* 最初の要素(A)が右端に来る */
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+.action-btns button {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: #e94560;
+  border: 3px solid #7a1830;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+  padding: 0;
+  transition: transform 0.06s ease;
+}
+.action-btns button:active { background: #b82f45; transform: scale(0.92); }
+.action-btns small { font-size: 10px; font-weight: normal; }
+#cv-b { background: #4b6cb7; border-color: #223a6b; margin-top: 18px; }
+#cv-b:active { background: #33508f; }
+
+/* 縦持ちなど幅の狭い画面ではコントローラーを縮めて全ボタンを収める */
+@media (max-width: 520px) {
+  #controller {
+    padding: 10px 14px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    padding-left: calc(14px + env(safe-area-inset-left));
+    padding-right: calc(14px + env(safe-area-inset-right));
+  }
+  .dpad { width: 140px; height: 140px; }
+  .dpad button { width: 46px; height: 46px; font-size: 20px; }
+  #cv-up    { top: 0;   left: 47px; }
+  #cv-down  { bottom: 0; left: 47px; }
+  #cv-left  { top: 47px; left: 0; }
+  #cv-right { top: 47px; right: 0; }
+  .action-btns { gap: 12px; }
+  .action-btns button { width: 64px; height: 64px; font-size: 20px; }
+  .action-btns small { font-size: 9px; }
+  #cv-b { margin-top: 14px; }
+}
+
+#mash-gauge-wrap {
+  position: absolute;
+  bottom: calc(30vh + 8px);
+  right: 22px;
+  width: 90px;
+  height: 10px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 6;
+}
+#mash-gauge {
+  height: 100%;
+  width: 0%;
+  background: #4b6cb7;
+}
+
